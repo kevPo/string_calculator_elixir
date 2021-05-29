@@ -21,4 +21,8 @@ defmodule StringCalculatorTest do
   test "new lines can be used" do
     assert StringCalculator.add("3\n3,3") == 9
   end
+
+  test "accepts custom delimeters" do
+    assert StringCalculator.add("//;\n1;2") == 3
+  end
 end
