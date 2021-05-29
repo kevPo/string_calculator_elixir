@@ -25,4 +25,8 @@ defmodule StringCalculatorTest do
   test "accepts custom delimeters" do
     assert StringCalculator.add("//;\n1;2") == 3
   end
+
+  test "error is thrown for negatives" do
+    assert StringCalculator.add("1,-2") == {:error, "Negatives not allowed"}
+  end
 end
