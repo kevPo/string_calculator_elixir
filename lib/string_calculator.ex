@@ -1,20 +1,23 @@
 defmodule StringCalculator do
   def add(""), do: 0
-  def add("//" <> rest), do: get_custom_delimiters(rest) |> calculate
-  def add(values), do: calculate([values: values, delimiters: [",", "\n"]])
-
-  defp calculate([values: values, delimiters: delimiters]) do
-      extract_numbers(values, delimiters)
-      |> convert_strings_to_int
-      |> validate_all_are_positive
-      |> ignore_numbers_over_1000
-      |> sum_values
+  def add("//" <> rest), do: get_custom_delimiters(rest) |> add
+  def add({values, delimiters}) do
+    extract_numbers(values, delimiters)
+    |> convert_strings_to_int
+    |> validate_all_are_positive
+    |> ignore_numbers_over_1000
+    |> sum_values
   end
+  def add(values), do: get_default_delimiters(values) |> add
 
   defp get_custom_delimiters(value) do
     [delimiters | string] = String.split(value, ["\n"])
     delimiters = String.split(delimiters, ["][", "[", "]"], trim: true)
-    [values: Enum.join(string), delimiters: delimiters]
+    {Enum.join(string), delimiters}
+  end
+
+  def get_default_delimiters(values) do
+    {values, [",", "\n"]}
   end
 
   defp extract_numbers(values, delimiters) do
