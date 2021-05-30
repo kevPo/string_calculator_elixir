@@ -13,18 +13,19 @@ defmodule StringCalculator do
 
   defp extract_delimiters(value) do
     case value do
+      "//[" <> rest -> get_custom_delimiters(rest)
       "//" <> rest -> get_custom_delimiters(rest)
       _ -> [values: value, delimiters: [",", "\n"]]
     end
   end
 
-  defp extract_numbers([values: values, delimiters: delimiters]) do
-    String.split(values, delimiters)
+  defp get_custom_delimiters(value) do
+    [delimiter | string] = String.split(value, ["]\n", "\n"])
+    [values: Enum.join(string), delimiters: delimiter]
   end
 
-  defp get_custom_delimiters(value) do
-    [delimiter | string] = String.split(value, "\n")
-    [values: Enum.join(string), delimiters: delimiter]
+  defp extract_numbers([values: values, delimiters: delimiters]) do
+    String.split(values, delimiters)
   end
 
   defp convert_strings_to_int(value) do

@@ -33,4 +33,8 @@ defmodule StringCalculatorTest do
   test "numbers larger than 1000 are ignored" do
     assert StringCalculator.add("1001,2") == 2
   end
+
+  test "delimiters can be any length" do
+    assert StringCalculator.add("//[***]\n1***2***3") == 6
+  end
 end
