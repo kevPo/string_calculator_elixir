@@ -37,4 +37,12 @@ defmodule StringCalculatorTest do
   test "delimiters can be any length" do
     assert StringCalculator.add("//[***]\n1***2***3") == 6
   end
+
+  test "multiple custom delimiters" do
+    assert StringCalculator.add("//[*][%]\n1*2%3") == 6
+  end
+
+  test "multiple custom delimiters with various length" do
+    assert StringCalculator.add("//[***][%]\n1***2%3") == 6
+  end
 end

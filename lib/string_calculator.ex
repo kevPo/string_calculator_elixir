@@ -1,27 +1,26 @@
 defmodule StringCalculator do
+  def add(""), do: 0
+
   def add(value) do
-    case value do
-      "" -> 0
-      _ -> extract_delimiters(value)
+    extract_delimiters(value)
       |> extract_numbers
       |> convert_strings_to_int
       |> validate_all_are_positive
       |> ignore_numbers_over_1000
       |> sum_values
-    end
   end
 
   defp extract_delimiters(value) do
     case value do
-      "//[" <> rest -> get_custom_delimiters(rest)
       "//" <> rest -> get_custom_delimiters(rest)
       _ -> [values: value, delimiters: [",", "\n"]]
     end
   end
 
   defp get_custom_delimiters(value) do
-    [delimiter | string] = String.split(value, ["]\n", "\n"])
-    [values: Enum.join(string), delimiters: delimiter]
+    [delimiters | string] = String.split(value, ["\n"])
+    delimiters = String.split(delimiters, ["][", "[", "]"], trim: true)
+    [values: Enum.join(string), delimiters: delimiters]
   end
 
   defp extract_numbers([values: values, delimiters: delimiters]) do
@@ -29,22 +28,18 @@ defmodule StringCalculator do
   end
 
   defp convert_strings_to_int(value) do
-    Enum.map(value, &convert_to_int/1)
-  end
-
-  defp convert_to_int(value) do
-    String.to_integer(value)
+    Enum.map(value, &(String.to_integer(&1)))
   end
 
   defp validate_all_are_positive(values) do
-    case Enum.all?(values, fn x -> x >= 0 end) do
-      true -> {:ok, values}
-      false -> {:error, "Negatives not allowed"}
+    case Enum.any?(values, &(&1 < 0)) do
+      false -> {:ok, values}
+      true -> {:error, "Negatives not allowed"}
     end
   end
 
   defp ignore_numbers_over_1000({:ok, values}) do
-    {:ok, Enum.filter(values, fn x -> x < 1001 end)}
+    {:ok, Enum.filter(values, &(&1 < 1001))}
   end
 
   defp ignore_numbers_over_1000({:error, message}) do
