@@ -26,8 +26,8 @@ defmodule StringCalculatorTest do
     assert StringCalculator.add("//;\n1;2") == 3
   end
 
-  test "error is thrown for negatives" do
-    assert StringCalculator.add("1,-2") == {:error, "Negatives not allowed"}
+  assert_raise RuntimeError, ~r/^Negatives not allowed/, fn ->
+    StringCalculator.add("1,-2")
   end
 
   test "numbers larger than 1000 are ignored" do
