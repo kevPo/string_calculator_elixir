@@ -1,20 +1,28 @@
 defmodule StringCalculator do
   def add!(""), do: 0
-  def add!("//" <> rest), do: get_custom_delimiters(rest) |> add!
-  def add!(values) when is_bitstring(values), do: get_default_delimiters(values) |> add!
-  def add!({values, delimiters}) do
-    numbers = String.split(values, delimiters) |> Enum.map(&(String.to_integer(&1)))
+  def add!("//" <> rest), do: add_with_custom_delimiters(rest)
+  def add!(values) when is_bitstring(values), do: add_with_default_delimiters(values)
+  def add!([], accumulator), do: accumulator
+  def add!([ head | _ ], _) when head < 0, do: raise "Negatives not allowed"
+  def add!([ head | tail ], accumulator) when head > 1000, do: add!(tail, accumulator)
+  def add!([ head | tail ], accumulator), do: add!(tail, accumulator + head)
 
-    case Enum.any?(numbers, &(&1 < 0)) do
-      true -> raise "Negatives not allowed"
-      false -> Enum.filter(numbers, &(&1 < 1001)) |> Enum.sum
-    end
+  def extract_numbers({values, delimiters}) do
+    String.split(values, delimiters)
+    |> Enum.map(&(String.to_integer(&1)))
   end
 
-  defp get_default_delimiters(values), do: {values, [",", "\n"]}
-  defp get_custom_delimiters(value) do
+  defp add_with_default_delimiters(values) do
+    {values, [",", "\n"]}
+    |> extract_numbers
+    |> add!(0)
+  end
+
+  defp add_with_custom_delimiters(value) do
     [delimiters | string] = String.split(value, ["\n"])
     delimiters = String.split(delimiters, ["][", "[", "]"], trim: true)
     {Enum.join(string), delimiters}
+    |> extract_numbers
+    |> add!(0)
   end
 end
